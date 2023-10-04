@@ -38,6 +38,12 @@
     "router": {
       "return_error_msg": true
     },
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true
+    },
     "plugin/http-server": {
       "name": [
         "krakend-server-example"

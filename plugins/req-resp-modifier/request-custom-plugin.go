@@ -34,6 +34,7 @@ func (p *RequestCustomPlugin) Bootstrap(req RequestWrapper) (RequestWrapper, err
 
 	// TODO Keep only when testing JSON type error response.
 	if 0 == 0 {
+		logger.Debug("testing JSON type error response")
 		return nil, shared.StringToHTTPResponseError("my intentional error", 500)
 	}
 

@@ -26,7 +26,7 @@ func NewCustomPlugin(ctx PluginContext) (*CustomPlugin, error) {
 
 	// The plugin will look for this path:
 	path, _ := config["path"].(string)
-	p.ctx.logger.Debug(fmt.Sprintf("The plugin is now hijacking the path %s", path))
+	logger.Debug(fmt.Sprintf("The plugin is now hijacking the path %s", path))
 
 	// check the passed configuration and initialize the plugin
 	name, ok := config["name"].(string)

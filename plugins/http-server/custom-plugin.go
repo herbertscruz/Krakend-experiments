@@ -23,7 +23,7 @@ func NewCustomPlugin(ctx PluginContext) (*CustomPlugin, error) {
 
 	// The plugin will look for this path:
 	path, _ := config["path"].(string)
-	p.ctx.logger.Debug(fmt.Sprintf("The plugin is now hijacking the path %s", path))
+	logger.Debug(fmt.Sprintf("The plugin is now hijacking the path %s", path))
 
 	p.path = path
 
@@ -39,5 +39,5 @@ func (p *CustomPlugin) Bootstrap(w http.ResponseWriter, req *http.Request) {
 
 	// The path has to be hijacked:
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(req.URL.Path))
-	p.ctx.logger.Debug("request:", html.EscapeString(req.URL.Path))
+	logger.Debug("request:", html.EscapeString(req.URL.Path))
 }
