@@ -30,14 +30,15 @@ func NewCustomPlugin(ctx PluginContext) (*CustomPlugin, error) {
 	return &p, nil
 }
 
-func (p *CustomPlugin) Bootstrap(w http.ResponseWriter, req *http.Request) {
+func (p *CustomPlugin) Bootstrap(w http.ResponseWriter, req *http.Request) (*http.Response, error) {
 	// If the requested path is not what we defined, continue.
 	if req.URL.Path != p.path {
 		p.ctx.h.ServeHTTP(w, req)
-		return
+		return nil, nil
 	}
 
 	// The path has to be hijacked:
 	fmt.Fprintf(w, "Hello, %q", html.EscapeString(req.URL.Path))
 	logger.Debug("request:", html.EscapeString(req.URL.Path))
+	return nil, nil
 }

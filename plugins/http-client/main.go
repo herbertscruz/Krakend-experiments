@@ -6,6 +6,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/herbertscruz/krakend-experiments/shared"
 )
 
 var pluginName = "krakend-client-example"
@@ -28,7 +30,18 @@ func (r registerer) registerClients(_ context.Context, extra map[string]interfac
 		return nil, err
 	}
 
-	return http.HandlerFunc(customPlugin.Bootstrap), nil
+	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		resp, err := customPlugin.Bootstrap(w, req)
+		if err != nil {
+			shared.WriteErrorToHttpResponseWriter(err, resp, w)
+			return
+		}
+
+		if resp != nil {
+			shared.WriteHttpResponseToHttpResponseWriter(resp, w)
+			return
+		}
+	}), nil
 }
 
 func main() {}

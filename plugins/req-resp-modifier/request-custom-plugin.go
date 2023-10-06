@@ -24,7 +24,7 @@ func NewRequestCustomPlugin(ctx PluginContext) (*RequestCustomPlugin, error) {
 	return &p, nil
 }
 
-func (p *RequestCustomPlugin) Bootstrap(req RequestWrapper) (RequestWrapper, error) {
+func (p *RequestCustomPlugin) Bootstrap(req *shared.RequestWrapper) (*shared.RequestWrapper, error) {
 	fmt.Println("params:", req.Params())
 	fmt.Println("headers:", req.Headers())
 	fmt.Println("method:", req.Method())

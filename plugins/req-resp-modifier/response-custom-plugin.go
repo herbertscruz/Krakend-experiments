@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+
+	"github.com/herbertscruz/krakend-experiments/shared"
 )
 
 type ResponseCustomPlugin struct {
@@ -22,7 +24,7 @@ func NewResponseCustomPlugin(ctx PluginContext) (*ResponseCustomPlugin, error) {
 	return &p, nil
 }
 
-func (p *ResponseCustomPlugin) Bootstrap(resp ResponseWrapper) (ResponseWrapper, error) {
+func (p *ResponseCustomPlugin) Bootstrap(resp *shared.ResponseWrapper) (*shared.ResponseWrapper, error) {
 	fmt.Println("data:", resp.Data())
 	fmt.Println("is complete:", resp.IsComplete())
 	fmt.Println("headers:", resp.Headers())

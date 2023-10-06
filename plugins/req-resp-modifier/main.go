@@ -5,8 +5,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io"
-	"net/url"
 
 	"github.com/herbertscruz/krakend-experiments/shared"
 )
@@ -25,14 +23,13 @@ func (r registerer) RegisterModifiers(f func(
 )) {
 	f(string(r)+"-request", r.requestDump, true, false)
 	f(string(r)+"-response", r.responseDump, false, true)
-	fmt.Println(string(r), "registered!!!")
 }
 
 func (r registerer) requestDump(
 	extra map[string]interface{},
 ) func(interface{}) (interface{}, error) {
 	return func(input interface{}) (interface{}, error) {
-		req, ok := input.(RequestWrapper)
+		req, ok := input.(shared.RequestWrapper)
 		if !ok {
 			logger.Error(unkownTypeErr)
 			return nil, shared.ErrorToHTTPResponseError(unkownTypeErr, 500)
@@ -45,7 +42,7 @@ func (r registerer) requestDump(
 			return nil, shared.ErrorToHTTPResponseError(err, 500)
 		}
 
-		return customPlugin.Bootstrap(req)
+		return customPlugin.Bootstrap(&req)
 	}
 }
 
@@ -53,7 +50,7 @@ func (r registerer) responseDump(
 	extra map[string]interface{},
 ) func(interface{}) (interface{}, error) {
 	return func(input interface{}) (interface{}, error) {
-		resp, ok := input.(ResponseWrapper)
+		resp, ok := input.(shared.ResponseWrapper)
 		if !ok {
 			logger.Error(unkownTypeErr)
 			return nil, shared.ErrorToHTTPResponseError(unkownTypeErr, 500)
@@ -66,31 +63,13 @@ func (r registerer) responseDump(
 			return nil, shared.ErrorToHTTPResponseError(err, 500)
 		}
 
-		return customPlugin.Bootstrap(resp)
+		return customPlugin.Bootstrap(&resp)
 	}
 }
 
 func main() {}
 
 var unkownTypeErr = errors.New("unknow request type")
-
-type RequestWrapper interface {
-	Params() map[string]string
-	Headers() map[string][]string
-	Body() io.ReadCloser
-	Method() string
-	URL() *url.URL
-	Query() url.Values
-	Path() string
-}
-
-type ResponseWrapper interface {
-	Data() map[string]interface{}
-	Io() io.Reader
-	IsComplete() bool
-	StatusCode() int
-	Headers() map[string][]string
-}
 
 // This logger is replaced by the RegisterLogger method to load the one from KrakenD
 var logger Logger = noopLogger{}
