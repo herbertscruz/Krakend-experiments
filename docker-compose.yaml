@@ -7,3 +7,14 @@ services:
       - 8080:8080
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  sample:
+    image: node:16-alpine
+    working_dir: /app
+    container_name: sample
+    restart: unless-stopped
+    command: sh -c "npm i && npm start"
+    ports:
+      - 3010:3010
+    volumes:
+      - ./sample:/app

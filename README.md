@@ -11,5 +11,7 @@ docker-compose up --build
 ## Endpoints
 
 ```sh
+curl --location 'http://localhost:8080/posts'
+curl --location 'http://localhost:8080/posts/1'
 curl --location 'http://localhost:8080/test/1'
 ```
