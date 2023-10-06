@@ -1,0 +1,31 @@
+{
+  "version": 3,
+  "plugin": {
+    "pattern": ".so",
+    "folder": "/etc/krakend/plugins/.bin/"
+  },
+  "endpoints": [
+    {{ template "sampleGetAllPosts" }},
+    {{ template "sampleGetAPostById" }},
+    {{ template "testGetById" }}
+  ],
+  "extra_config": {
+    "router": {
+      "return_error_msg": true
+    },
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true
+    },
+    "plugin/http-server": {
+      "name": [
+        "krakend-server-example"
+      ],
+      "krakend-server-example": {
+        "path": "/__debug/hijack-me"
+      }
+    }
+  }
+}

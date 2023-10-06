@@ -1,0 +1,41 @@
+{{define "sampleGetAllPosts"}}
+  {
+    "@comment": "Sample: get all posts",
+    "endpoint": "/posts",
+    "method": "GET",
+    "output_encoding": "json-collection",
+    "backend": [
+      {
+        "url_pattern": "/posts",
+        "host": ["http://sample:3010/"],
+        "method": "GET",
+        "encoding": "safejson",
+        "extra_config":{
+          "backend/http": {
+            "return_error_code": true
+          }
+        }
+      }
+    ]
+  }
+{{end}}
+
+{{define "sampleGetAPostById"}}
+  {
+    "@comment": "Sample: get a post by id",
+    "endpoint": "/posts/{id}",
+    "method": "GET",
+    "backend": [
+      {
+        "url_pattern": "/posts/{id}",
+        "host": ["http://sample:3010/"],
+        "method": "GET",
+        "extra_config":{
+          "backend/http": {
+            "return_error_code": true
+          }
+        }
+      }
+    ]
+  }
+{{end}}
