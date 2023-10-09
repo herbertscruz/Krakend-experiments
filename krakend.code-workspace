@@ -1,16 +1,7 @@
 {
     "folders": [
       {
-        "path": "./plugins/http-client"
-      },
-      {
-        "path": "./plugins/http-server"
-      },
-      {
-        "path": "./plugins/req-resp-modifier"
-      },
-      {
-        "path": "./plugins/shared"
+        "path": "./plugins"
       },
       {
         "path": "."

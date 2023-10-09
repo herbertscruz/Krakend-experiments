@@ -9,10 +9,8 @@
         "url_pattern": "/__debug/{id}",
         "extra_config": {
           "plugin/http-client": {
-            "name": "krakend-client-example",
-            "krakend-client-example": {
-              "path": "/__debug/hijack-me"
-            }
+            "name": "custom-http-client",
+            "custom-http-client": {}
           }
         }
       }
@@ -20,10 +18,10 @@
     "extra_config": {
       "plugin/req-resp-modifier": {
         "name": [
-          "krakend-debugger-request",
-          "krakend-debugger-response"
+          "custom-modifier-request",
+          "custom-modifier-response"
         ],
-        "krakend-debugger": {}
+        "custom-modifier": {}
       }
     }
   }

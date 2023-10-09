@@ -3,16 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
-
-	"github.com/herbertscruz/krakend-experiments/shared"
 )
 
-type RequestCustomPlugin struct {
+type RequestModifierPlugin struct {
 	ctx PluginContext
 }
 
-func NewRequestCustomPlugin(ctx PluginContext) (*RequestCustomPlugin, error) {
-	p := RequestCustomPlugin{}
+func NewRequestModifierPlugin(ctx PluginContext) (*RequestModifierPlugin, error) {
+	p := RequestModifierPlugin{}
 	p.ctx = ctx
 
 	_, okGeneral := ctx.extra[ctx.pluginName].(map[string]interface{})
@@ -24,7 +22,7 @@ func NewRequestCustomPlugin(ctx PluginContext) (*RequestCustomPlugin, error) {
 	return &p, nil
 }
 
-func (p *RequestCustomPlugin) Bootstrap(req *shared.RequestWrapper) (*shared.RequestWrapper, error) {
+func (p *RequestModifierPlugin) Bootstrap(req *RequestWrapper) (*RequestWrapper, error) {
 	fmt.Println("params:", req.Params())
 	fmt.Println("headers:", req.Headers())
 	fmt.Println("method:", req.Method())
