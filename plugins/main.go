@@ -4,9 +4,11 @@ package main
 
 import (
 	"context"
+	"customErrors"
 	"errors"
 	"fmt"
 	"net/http"
+	"utils"
 )
 
 var pluginName = "custom"
@@ -37,14 +39,14 @@ func (r registerer) requestDump(
 			logger.Info(fmt.Sprintf("--- Completed %s-request ---", string(ModifierRegisterer)))
 		}()
 
-		req, ok := input.(RequestWrapperInterface)
+		req, ok := input.(utils.RequestWrapperInterface)
 		if !ok {
-			err := ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
+			err := customErrors.ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
 			logger.Error(err)
 			return nil, err
 		}
 
-		request := RequestWrapper{}
+		request := utils.RequestWrapper{}
 		request.SetValues(
 			req.Params(),
 			req.Headers(),
@@ -58,7 +60,7 @@ func (r registerer) requestDump(
 		pluginContext := PluginContext{r, string(ModifierRegisterer), extra, nil}
 		plugin, err := NewRequestModifierPlugin(pluginContext)
 		if err != nil {
-			err := ErrorToHTTPResponseError(err, http.StatusInternalServerError)
+			err := customErrors.ErrorToHTTPResponseError(err, http.StatusInternalServerError)
 			logger.Error(err)
 			return nil, err
 		}
@@ -77,14 +79,14 @@ func (r registerer) responseDump(
 			logger.Info(fmt.Sprintf("--- Completed %s-response ---", string(ModifierRegisterer)))
 		}()
 
-		resp, ok := input.(ResponseWrapperInterface)
+		resp, ok := input.(utils.ResponseWrapperInterface)
 		var err error
 		if !ok {
-			err = ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
+			err = customErrors.ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
 			logger.Error(err)
 		}
 
-		response := ResponseWrapper{}
+		response := utils.ResponseWrapper{}
 		response.SetValues(
 			resp.Data(),
 			resp.Io(),
@@ -94,21 +96,21 @@ func (r registerer) responseDump(
 		)
 
 		if err != nil {
-			return WriteErrorToResponseWrapper(err, &response), nil
+			return utils.WriteErrorToResponseWrapper(err, &response), nil
 		}
 
 		pluginContext := PluginContext{r, string(ModifierRegisterer), extra, nil}
 		plugin, err := NewResponseModifierPlugin(pluginContext)
 		if err != nil {
-			err := ErrorToHTTPResponseError(err, http.StatusInternalServerError)
+			err := customErrors.ErrorToHTTPResponseError(err, http.StatusInternalServerError)
 			logger.Error(err)
-			return WriteErrorToResponseWrapper(err, &response), nil
+			return utils.WriteErrorToResponseWrapper(err, &response), nil
 		}
 
 		wrapper, err := plugin.Bootstrap(&response)
 		if err != nil {
 			logger.Error(err)
-			return WriteErrorToResponseWrapper(err, &response), nil
+			return utils.WriteErrorToResponseWrapper(err, &response), nil
 		}
 
 		return wrapper, nil
@@ -138,12 +140,12 @@ func (r registerer) registerHandlers(_ context.Context, extra map[string]interfa
 
 		resp, err := plugin.Bootstrap(w, req)
 		if err != nil {
-			WriteErrorToHttpResponseWriter(err, resp, w)
+			utils.WriteErrorToHttpResponseWriter(err, resp, w)
 			return
 		}
 
 		if resp != nil {
-			WriteHttpResponseToHttpResponseWriter(resp, w)
+			utils.WriteHttpResponseToHttpResponseWriter(resp, w)
 			return
 		}
 	}), nil
@@ -172,12 +174,12 @@ func (r registerer) registerClients(_ context.Context, extra map[string]interfac
 
 		resp, err := plugin.Bootstrap(w, req)
 		if err != nil {
-			WriteErrorToHttpResponseWriter(err, resp, w)
+			utils.WriteErrorToHttpResponseWriter(err, resp, w)
 			return
 		}
 
 		if resp != nil {
-			WriteHttpResponseToHttpResponseWriter(resp, w)
+			utils.WriteHttpResponseToHttpResponseWriter(resp, w)
 			return
 		}
 	}), nil

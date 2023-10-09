@@ -1,7 +1,8 @@
-package main
+package utils
 
 import (
 	"bytes"
+	"customErrors"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -48,12 +49,12 @@ func WriteHttpResponseToHttpResponseWriter(resp *http.Response, w http.ResponseW
 }
 
 func WriteErrorToHttpResponseWriter(err error, resp *http.Response, w http.ResponseWriter) {
-	var oHTTPResponseError HTTPResponseError
+	var oHTTPResponseError customErrors.HTTPResponseError
 	switch e := err.(type) {
-	case HTTPResponseError:
+	case customErrors.HTTPResponseError:
 		oHTTPResponseError = e
 	default:
-		oHTTPResponseError = ErrorToHTTPResponseError(e, http.StatusInternalServerError)
+		oHTTPResponseError = customErrors.ErrorToHTTPResponseError(e, http.StatusInternalServerError)
 	}
 
 	payload := []byte(err.Error())
@@ -81,12 +82,12 @@ func WriteErrorToHttpResponseWriter(err error, resp *http.Response, w http.Respo
 }
 
 func WriteErrorToResponseWrapper(err error, resp *ResponseWrapper) *ResponseWrapper {
-	var oHTTPResponseError HTTPResponseError
+	var oHTTPResponseError customErrors.HTTPResponseError
 	switch e := err.(type) {
-	case HTTPResponseError:
+	case customErrors.HTTPResponseError:
 		oHTTPResponseError = e
 	default:
-		oHTTPResponseError = ErrorToHTTPResponseError(e, http.StatusInternalServerError)
+		oHTTPResponseError = customErrors.ErrorToHTTPResponseError(e, http.StatusInternalServerError)
 	}
 
 	if len(resp.Data()) > 0 {

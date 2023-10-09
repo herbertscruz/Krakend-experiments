@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"utils"
 )
 
 type ResponseModifierPlugin struct {
@@ -22,7 +23,7 @@ func NewResponseModifierPlugin(ctx PluginContext) (*ResponseModifierPlugin, erro
 	return &p, nil
 }
 
-func (p *ResponseModifierPlugin) Bootstrap(resp *ResponseWrapper) (*ResponseWrapper, error) {
+func (p *ResponseModifierPlugin) Bootstrap(resp *utils.ResponseWrapper) (*utils.ResponseWrapper, error) {
 	fmt.Println("data:", resp.Data())
 	fmt.Println("is complete:", resp.IsComplete())
 	fmt.Println("headers:", resp.Headers())

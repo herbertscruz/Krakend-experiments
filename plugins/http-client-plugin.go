@@ -1,6 +1,7 @@
 package main
 
 import (
+	"customErrors"
 	"errors"
 	"fmt"
 	"net/http"
@@ -25,7 +26,7 @@ func NewHttpClientPlugin(ctx PluginContext) (*HttpClientPlugin, error) {
 func (p *HttpClientPlugin) Bootstrap(w http.ResponseWriter, req *http.Request) (*http.Response, error) {
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, ErrorToHTTPResponseError(err, http.StatusInternalServerError)
+		return nil, customErrors.ErrorToHTTPResponseError(err, http.StatusInternalServerError)
 	}
 
 	return resp, nil

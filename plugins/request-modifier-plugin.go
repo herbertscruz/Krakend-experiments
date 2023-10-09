@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"utils"
 )
 
 type RequestModifierPlugin struct {
@@ -22,7 +23,7 @@ func NewRequestModifierPlugin(ctx PluginContext) (*RequestModifierPlugin, error)
 	return &p, nil
 }
 
-func (p *RequestModifierPlugin) Bootstrap(req *RequestWrapper) (*RequestWrapper, error) {
+func (p *RequestModifierPlugin) Bootstrap(req *utils.RequestWrapper) (*utils.RequestWrapper, error) {
 	fmt.Println("params:", req.Params())
 	fmt.Println("headers:", req.Headers())
 	fmt.Println("method:", req.Method())
