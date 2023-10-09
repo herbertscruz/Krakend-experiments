@@ -5,6 +5,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/herbertscruz/krakend-experiments/shared"
 )
@@ -29,20 +30,33 @@ func (r registerer) requestDump(
 	extra map[string]interface{},
 ) func(interface{}) (interface{}, error) {
 	return func(input interface{}) (interface{}, error) {
-		req, ok := input.(shared.RequestWrapper)
+		req, ok := input.(shared.RequestWrapperInterface)
 		if !ok {
-			logger.Error(unkownTypeErr)
-			return nil, shared.ErrorToHTTPResponseError(unkownTypeErr, 500)
+			err := shared.ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
+			logger.Error(err)
+			return nil, err
 		}
+
+		request := shared.RequestWrapper{}
+		request.SetValues(
+			req.Params(),
+			req.Headers(),
+			req.Body(),
+			req.Method(),
+			req.URL(),
+			req.Query(),
+			req.Path(),
+		)
 
 		pluginContext := PluginContext{r, pluginName, extra}
 		customPlugin, err := NewRequestCustomPlugin(pluginContext)
 		if err != nil {
+			err := shared.ErrorToHTTPResponseError(err, http.StatusInternalServerError)
 			logger.Error(err)
-			return nil, shared.ErrorToHTTPResponseError(err, 500)
+			return nil, err
 		}
 
-		return customPlugin.Bootstrap(&req)
+		return customPlugin.Bootstrap(&request)
 	}
 }
 
@@ -50,20 +64,41 @@ func (r registerer) responseDump(
 	extra map[string]interface{},
 ) func(interface{}) (interface{}, error) {
 	return func(input interface{}) (interface{}, error) {
-		resp, ok := input.(shared.ResponseWrapper)
+		resp, ok := input.(shared.ResponseWrapperInterface)
+		var err error
 		if !ok {
-			logger.Error(unkownTypeErr)
-			return nil, shared.ErrorToHTTPResponseError(unkownTypeErr, 500)
+			err = shared.ErrorToHTTPResponseError(unkownTypeErr, http.StatusInternalServerError)
+			logger.Error(err)
+		}
+
+		response := shared.ResponseWrapper{}
+		response.SetValues(
+			resp.Data(),
+			resp.Io(),
+			resp.IsComplete(),
+			resp.StatusCode(),
+			resp.Headers(),
+		)
+
+		if err != nil {
+			return shared.WriteErrorToResponseWrapper(err, &response), nil
 		}
 
 		pluginContext := PluginContext{r, pluginName, extra}
 		customPlugin, err := NewResponseCustomPlugin(pluginContext)
 		if err != nil {
+			err := shared.ErrorToHTTPResponseError(err, http.StatusInternalServerError)
 			logger.Error(err)
-			return nil, shared.ErrorToHTTPResponseError(err, 500)
+			return shared.WriteErrorToResponseWrapper(err, &response), nil
 		}
 
-		return customPlugin.Bootstrap(&resp)
+		wrapper, err := customPlugin.Bootstrap(&response)
+		if err != nil {
+			logger.Error(err)
+			return shared.WriteErrorToResponseWrapper(err, &response), nil
+		}
+
+		return wrapper, nil
 	}
 }
 

@@ -29,14 +29,14 @@ func WriteHttpResponseFromMap(payload map[string]string, statusCode int) *http.R
 }
 
 func WriteHttpResponseToHttpResponseWriter(resp *http.Response, w http.ResponseWriter) {
-	// Copy headers, status codes, and body
+	// Copy headers
 	for k, hs := range resp.Header {
 		for _, h := range hs {
 			w.Header().Add(k, h)
 		}
 	}
 
-	// Copy status codes
+	// Copy status code
 	w.WriteHeader(resp.StatusCode)
 
 	// Copy body
@@ -78,4 +78,38 @@ func WriteErrorToHttpResponseWriter(err error, resp *http.Response, w http.Respo
 	}
 
 	WriteHttpResponseToHttpResponseWriter(newresp, w)
+}
+
+func WriteErrorToResponseWrapper(err error, resp *ResponseWrapper) *ResponseWrapper {
+	var oHTTPResponseError HTTPResponseError
+	switch e := err.(type) {
+	case HTTPResponseError:
+		oHTTPResponseError = e
+	default:
+		oHTTPResponseError = ErrorToHTTPResponseError(e, http.StatusInternalServerError)
+	}
+
+	if len(resp.Data()) > 0 {
+		// Handle body (output_encoding different than no-op)
+		var data map[string]interface{}
+		json.Unmarshal([]byte(oHTTPResponseError.Error()), &data)
+		resp.SetData(data)
+
+		return resp
+	}
+
+	payload := []byte(oHTTPResponseError.Error())
+	contentLength := int64(len(payload))
+
+	// Handle headers
+	resp.Headers()["Content-Length"] = []string{fmt.Sprint(contentLength)}
+	resp.Headers()["Content-Type"] = []string{oHTTPResponseError.HTTPEncoding}
+
+	// Handle status code
+	resp.SetStatusCode(oHTTPResponseError.StatusCode())
+
+	// Handle body (output_encoding equals no-op)
+	resp.SetIo(bytes.NewReader(payload))
+
+	return resp
 }

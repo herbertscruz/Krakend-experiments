@@ -43,3 +43,54 @@
     ]
   }
 {{end}}
+
+{{define "sampleGetAllComments"}}
+  {
+    "@comment": "Sample: get all comments",
+    "endpoint": "/comments",
+    "method": "GET",
+    "output_encoding": "json-collection",
+    "backend": [
+      {
+        "url_pattern": "/comments",
+        "host": ["http://sample:3010/"],
+        "method": "GET",
+        "encoding": "safejson"
+      }
+    ],
+    "extra_config":{
+      "plugin/req-resp-modifier": {
+        "name": [
+          "krakend-debugger-request",
+          "krakend-debugger-response"
+        ],
+        "krakend-debugger": {}
+      }
+    }
+  }
+{{end}}
+
+{{define "sampleGetAllProfile"}}
+  {
+    "@comment": "Sample: get all profile",
+    "endpoint": "/profile",
+    "method": "GET",
+    "output_encoding": "no-op",
+    "backend": [
+      {
+        "url_pattern": "/profile",
+        "host": ["http://sample:3010/"],
+        "method": "GET"
+      }
+    ],
+    "extra_config":{
+      "plugin/req-resp-modifier": {
+        "name": [
+          "krakend-debugger-request",
+          "krakend-debugger-response"
+        ],
+        "krakend-debugger": {}
+      }
+    }
+  }
+{{end}}

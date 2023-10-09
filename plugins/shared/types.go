@@ -33,6 +33,24 @@ func (r RequestWrapper) URL() *url.URL                { return r.url }
 func (r RequestWrapper) Query() url.Values            { return r.query }
 func (r RequestWrapper) Path() string                 { return r.path }
 
+func (r *RequestWrapper) SetValues(
+	params map[string]string,
+	headers map[string][]string,
+	body io.ReadCloser,
+	method string,
+	url *url.URL,
+	query url.Values,
+	path string,
+) {
+	r.params = params
+	r.headers = headers
+	r.body = body
+	r.method = method
+	r.url = url
+	r.query = query
+	r.path = path
+}
+
 func (r *RequestWrapper) SetBody(body io.ReadCloser) {
 	r.body = body
 }
@@ -59,10 +77,32 @@ func (r ResponseWrapper) IsComplete() bool             { return r.isComplete }
 func (r ResponseWrapper) StatusCode() int              { return r.statusCode }
 func (r ResponseWrapper) Headers() map[string][]string { return r.headers }
 
-func (r *ResponseWrapper) SetIo(reader io.Reader) {
-	r.io = reader
+func (r *ResponseWrapper) SetValues(
+	data map[string]interface{},
+	io io.Reader,
+	isComplete bool,
+	statusCode int,
+	headers map[string][]string,
+) {
+	r.data = data
+	r.io = io
+	r.isComplete = isComplete
+	r.statusCode = statusCode
+	r.headers = headers
+}
+
+func (r *ResponseWrapper) SetData(data map[string]interface{}) {
+	r.data = data
+}
+
+func (r *ResponseWrapper) SetIo(io io.Reader) {
+	r.io = io
 }
 
 func (r *ResponseWrapper) SetStatusCode(statusCode int) {
 	r.statusCode = statusCode
+}
+
+func (r *ResponseWrapper) SetHeaders(headers map[string][]string) {
+	r.headers = headers
 }

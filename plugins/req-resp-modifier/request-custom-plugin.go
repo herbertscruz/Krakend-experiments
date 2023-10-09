@@ -32,11 +32,5 @@ func (p *RequestCustomPlugin) Bootstrap(req *shared.RequestWrapper) (*shared.Req
 	fmt.Println("query:", req.Query())
 	fmt.Println("path:", req.Path())
 
-	// TODO Keep only when testing JSON type error response.
-	if 0 == 0 {
-		logger.Debug("testing JSON type error response")
-		return nil, shared.StringToHTTPResponseError("my intentional error", 500)
-	}
-
 	return req, nil
 }
