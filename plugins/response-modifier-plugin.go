@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"utils"
 )
@@ -14,20 +13,26 @@ func NewResponseModifierPlugin(ctx PluginContext) (*ResponseModifierPlugin, erro
 	p := ResponseModifierPlugin{}
 	p.ctx = ctx
 
-	_, okGeneral := ctx.extra[ctx.pluginName].(map[string]interface{})
-	_, ok := ctx.extra[ctx.pluginName+"-response"].(map[string]interface{})
+	configGeneral, okGeneral := ctx.extra[ctx.pluginName].(map[string]interface{})
+
+	logger.Debug(loggerFormatter(ctx.pluginName, fmt.Sprintf("configGeneral: %v", configGeneral)))
+
+	config, ok := ctx.extra[ctx.pluginName+"-response"].(map[string]interface{})
 	if !okGeneral && !ok {
-		return nil, errors.New(fmt.Sprintf("general or response configuration of the %s plugin not found", ctx.pluginName))
+		info := fmt.Sprintf("general or response configuration of the %s plugin not found", ctx.pluginName)
+		logger.Info(loggerFormatter(ctx.pluginName, info))
 	}
+
+	logger.Debug(loggerFormatter(ctx.pluginName, fmt.Sprintf("config: %v", config)))
 
 	return &p, nil
 }
 
 func (p *ResponseModifierPlugin) Bootstrap(resp *utils.ResponseWrapper) (*utils.ResponseWrapper, error) {
-	fmt.Println("data:", resp.Data())
-	fmt.Println("is complete:", resp.IsComplete())
-	fmt.Println("headers:", resp.Headers())
-	fmt.Println("status code:", resp.StatusCode())
+	logger.Debug(loggerFormatter(p.ctx.pluginName, fmt.Sprintf("data: %v", resp.Data())))
+	logger.Debug(loggerFormatter(p.ctx.pluginName, fmt.Sprintf("is complete: %v", resp.IsComplete())))
+	logger.Debug(loggerFormatter(p.ctx.pluginName, fmt.Sprintf("headers: %v", resp.Headers())))
+	logger.Debug(loggerFormatter(p.ctx.pluginName, fmt.Sprintf("status code: %v", resp.StatusCode())))
 
 	return resp, nil
 }

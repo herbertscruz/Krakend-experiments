@@ -2,7 +2,6 @@ package main
 
 import (
 	"customErrors"
-	"errors"
 	"fmt"
 	"net/http"
 )
@@ -15,10 +14,13 @@ func NewHttpClientPlugin(ctx PluginContext) (*HttpClientPlugin, error) {
 	p := HttpClientPlugin{}
 	p.ctx = ctx
 
-	_, ok := ctx.extra[ctx.pluginName].(map[string]interface{})
+	config, ok := ctx.extra[ctx.pluginName].(map[string]interface{})
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("configuration of the %s plugin not found", ctx.pluginName))
+		info := fmt.Sprintf("configuration of the %s plugin not found", ctx.pluginName)
+		logger.Info(loggerFormatter(ctx.pluginName, info))
 	}
+
+	logger.Debug(loggerFormatter(ctx.pluginName, fmt.Sprintf("config: %v", config)))
 
 	return &p, nil
 }

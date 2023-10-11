@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"runtime"
+	"strings"
 	"utils"
 )
 
@@ -219,6 +221,13 @@ func (n noopLogger) Warning(_ ...interface{})  {}
 func (n noopLogger) Error(_ ...interface{})    {}
 func (n noopLogger) Critical(_ ...interface{}) {}
 func (n noopLogger) Fatal(_ ...interface{})    {}
+
+func loggerFormatter(pluginName string, info interface{}) string {
+	_, file, line, _ := runtime.Caller(1)
+	reference := fmt.Sprintf("%s:%d", file, line)
+
+	return fmt.Sprintf("[%s: %s] %v", strings.ToUpper(pluginName), reference, info)
+}
 
 type PluginContext struct {
 	r          registerer
